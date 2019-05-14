@@ -92,6 +92,3 @@ let rec cartesian xs ys =
 
 git remote add origin https://github.com/ktfa18/src.git
 
-ktfa18
-kenkichi.tanaka@nifty.com
-Ktanaka0157.
