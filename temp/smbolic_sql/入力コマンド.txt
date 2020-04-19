@@ -1,0 +1,17 @@
+./ssql < example.sql > example.smt2
+./cvc4-1.7-win64-opt.exe example.smt2 > example.txt
+
+time ./ssql < example.sql > example.txt
+time ./sql < example_10_02.sql > example_10_02.sql_.txt
+time ./sql < example_10_03.sql > example_10_03.sql.txt
+time ./sql < example_10_04.sql > example_10_04.sql.txt
+time ./sql < example_10_05.sql > example_10_05.sql.txt
+
+time z3 -smt2 example_10_01.sql.txt > example_10_01.sql.txt.txt
+time z3 -smt2 example_10_02.sql.txt > example_10_02.sql.txt.txt
+time z3 -smt2 example_10_03.sql.txt > example_10_03.sql.txt.txt
+time z3 -smt2 example_10_04.sql.txt > example_10_04.sql.txt.txt
+time z3 -smt2 example_10_05.sql.txt > example_10_05.sql.txt.txt
+
+
+

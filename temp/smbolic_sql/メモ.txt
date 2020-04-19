@@ -1,0 +1,33 @@
+(set-logic QF_SLIA)
+(set-option :produce-models true)
+(set-option :incremental true)
+(set-option :strings-exp true)
+;(set-option :strings-print-ascii true)
+;•¶Žš‚Ì”äŠr‰‰ŽZŽq
+(declare-const COMP String)
+(assert (= (str.len COMP) 10))
+(assert (str.in.re COMP (re.union (str.to.re "") (re.* (re.union (str.to.re "")(re.range "0" "9")(re.range "A" "Z")(re.range "a" "z"))))))
+(assert (str.in.re COMP (re.++ (re.range "x" "z") (re.* (re.union (str.to.re "")(re.range "0" "9")(re.range "A" "Z")(re.range "a" "z"))))))
+
+;•¶Žš‚ÌLIKEŽ®
+(declare-const LIKE String)
+(assert (<= (str.len LIKE) 10))
+(assert (str.in.re LIKE (re.union (str.to.re "") (re.* (re.union (str.to.re "")(re.range "0" "9")(re.range "A" "Z")(re.range "a" "z"))))))
+(assert (str.in.re LIKE (re.++ (str.to.re "TEST") (re.range "0" "z"))))
+
+;”’l
+(declare-const INTGER String)
+(assert (<= (str.len INTGER) 10))
+(assert (str.in.re INTGER (re.union (str.to.re "") (re.++ (re.opt (re.union (str.to.re "-")(str.to.re "+")))(re.+ (re.range "0" "9"))))))
+;(assert (= INTGER "+12"))
+(assert (= (str.to.int INTGER) 10))
+
+(declare-const INT_TEST Int)
+(assert (= INT_TEST (- 12)))
+(declare-const STR_TEST String)
+(assert (= STR_TEST (int.to.str (* INT_TEST (- 1)))))
+
+ 	
+
+(check-sat)
+(get-model)

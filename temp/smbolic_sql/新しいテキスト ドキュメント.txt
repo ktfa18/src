@@ -1,0 +1,15 @@
+#quit;;
+
+./sql
+open Sqlsyntax ;;
+let ic = open_in "example.sql" ;;
+let s = Sqlparser.stmt_list Sqllexer.token(Lexing.from_channel ic) ;;
+
+
+./sql < example.sql
+
+z3 -smt2 smt2.smt2
+
+
+‚¢‚ç‚È‚¢\•¶‚ÍÁ‚·‚×‚«‚©H
+

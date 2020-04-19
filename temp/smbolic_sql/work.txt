@@ -1,0 +1,145 @@
+let setA = [ '0'; '1'; '2' ]
+let setB = [ '5'; '6'; '7' ]
+let setC = [ 'A'; 'B' ];;
+
+let setA = [ ['0']; ['1']; ['2'] ]
+let setB = [ ['5']; ['6']; ['7'] ]
+let setC = [ ['A']; ['B'] ];;
+
+
+
+           [['0'; '5']; ['0'; '6']; ['0'; '7']; ['1'; '5']; ['1'; '6']; ['1'; '7'];['2'; '5']; ['2'; '6']; ['2'; '7']]
+
+
+
+let rec cartesian xs ys = 
+    match xs, ys with
+    | _, [] -> []
+    | [], _ -> []
+    | x :: xs', _ -> (List.map (fun y -> x@y) ys) @ (cartesian xs' ys);;
+
+
+
+let setAB' = cartesian setA setB ;;
+let setABC = cartesian setAB' setC ;;
+let setABC' = List.map(fun ((a,b),c) -> (a,b,c)) setABC
+
+let setAB' = cartesian setA setB ;;
+
+
+
+let setZ = [[ ['0']; ['1']; ['2'] ];[ ['5']; ['6']; ['7'] ];[ ['A']; ['B'] ]];;
+
+cartesian setZ;;
+
+let rec cartesian xs = 
+    match xs with
+    | [] -> []
+    | x :: [] -> []
+    | x :: y :: [] -> cartesian2 x y ; cartesian []
+    | x :: y :: xs -> cartesian2 x y ; cartesian xs;;
+
+cartesian2 [ ['0']; ['1']; ['2'] ] [ ['5']; ['6']; ['7'] ]
+
+let rec cartesian2 xs ys = 
+    match xs, ys with
+    | _, [] -> []
+    | [], _ -> []
+    | x :: xs', _ -> (List.map (fun y -> x@y) ys) @ (cartesian2 xs' ys);;
+
+--------------------
+
+[[ ['0']; ['1']; ['2'] ];[ ['5']; ['6']; ['7'] ];[ ['A']; ['B'] ]];;
+
+cartesian3 [['0']; ['1']; ['2']] [['5']; ['6']; ['7']] [[ ['A']; ['B'] ]]
+
+let aaa xs =
+    let abc = ref [] in
+
+    match xs with
+    | [] -> []
+    | [], _ -> []
+    | x1 :: x2 :: xs -> ;;
+    xs 
+
+cartesian3 [['0']; ['1']; ['2']]  [['5']; ['6']; ['7']]
+
+lec rec path_pattern_list x = 
+   lec path = ref [] in
+      match x with
+      | [] -> []
+      | x :: xs ->
+      path := cartesian x (List.hd xs)
+      let rec direct_product x =
+         path := cartesian x y
+         and cartesian xs ys = 
+             match xs, ys with
+             | _, [] -> []
+             | [], _ -> []
+             | x :: xs', _ -> (List.map (fun y -> x@y) ys) @ (cartesian xs' ys) in
+       direct_product x;
+       !path
+
+
+
+    
+
+let rec cartesian xs ys = 
+    match xs, ys with
+    | _, [] -> []
+    | [], _ -> []
+    | x :: xs', _ -> (List.map (fun y -> x@y) ys) @ (cartesian xs' ys);;
+
+git remote add origin https://github.com/ktfa18/src.git
+
+ktfa18
+kenkichi.tanaka@nifty.com
+Ktanaka0157.
+
+
+--------------------------------------------
+prt (ptn setZ);;
+prt [[]];;
+
+let setZ = [[ ["0"]; ["1"]; ["2"] ];[ ["5"]; ["6"]; ["7"] ];[ ["A"]; ["B"] ]];;
+ptn setZ;;
+let rec ptn s = 
+   match s with
+   | [] -> [[]]
+   | xs :: t1 ->
+      match t1 with
+      | [] -> xs
+      | ys :: zs -> ptn ((cartesian xs ys) :: zs)
+and cartesian xs ys =
+   match xs, ys with
+   | _ , [] -> xs
+   | [], _  -> xs
+   | x :: xs', _ ->(List.map (fun y -> x@y) ys) @ (cartesian xs' ys) ;;
+
+
+let lst = 
+[["0"; "5"; "A"]; ["0"; "5"; "B"]; ["0"; "6"; "A"]; ["0"; "6"; "B"];
+ ["0"; "7"; "A"]; ["0"; "7"; "B"]; ["1"; "5"; "A"]; ["1"; "5"; "B"];
+ ["1"; "6"; "A"]; ["1"; "6"; "B"]; ["1"; "7"; "A"]; ["1"; "7"; "B"];
+ ["2"; "5"; "A"]; ["2"; "5"; "B"]; ["2"; "6"; "A"]; ["2"; "6"; "B"];
+ ["2"; "7"; "A"]; ["2"; "7"; "B"]];;
+
+prt lst;;
+
+let rec prt s =
+   match s with
+   | [] -> Printf.printf ""
+   | x :: xs -> Printf.printf "(push)\n";
+                Printf.printf "(assert (and ";
+                print_prt x;
+                Printf.printf "))\n";
+                Printf.printf "(check)\n";
+                Printf.printf "(get-model)\n";
+                Printf.printf "(pop)\n\n";
+                prt xs
+and print_prt s =
+   match s with
+   | [] -> Printf.printf "";
+   | x :: xs -> Printf.printf "(= %s %s)" x x;
+                print_prt xs;;
+

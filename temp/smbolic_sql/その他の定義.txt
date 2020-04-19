@@ -1,0 +1,312 @@
+
+//
+//statements: delete statement
+//
+stmt:
+| delete_stmt { emit("STMT"); }
+
+delete_stmt:
+| DELETE delete_opts FROM NAME
+  opt_where opt_orderby opt_limit { emit("DELETEONE %d %s", $2, $4); free($4); }
+
+delete_opts:
+| delete_opts LOW_PRIORITY { $$ = $1 + 01; }
+| delete_opts QUICK { $$ = $1 + 02; }
+| delete_opts IGNORE { $$ = $1 + 04; }
+| { $$ = 0; } //nil
+
+delete_stmt: 
+| DELETE delete_opts
+  delete_list
+  FROM table_references opt_where
+            { emit("DELETEMULTI %d %d %d", $2, $3, $5); }
+
+delete_list:
+| NAME opt_dot_star { emit("TABLE %s", $1); free($1); $$ = 1; }
+| delete_list COMMA NAME opt_dot_star
+            { emit("TABLE %s", $3); free($3); $$ = $1 + 1; }
+
+opt_dot_star:
+| { None } 
+| DOT ASTERISK
+
+delete_stmt:
+| DELETE delete_opts
+  FROM delete_list
+  USING table_references opt_where
+            { emit("DELETEMULTI %d %d %d", $2, $4, $6); }
+
+//
+//statements: insert statement
+//
+stmt:
+| insert_stmt { emit("STMT"); }
+
+insert_stmt:
+| INSERT insert_opts opt_into NAME
+  opt_col_names
+  VALUES insert_vals_list
+  opt_ondupupdate { emit("INSERTVALS %d %d %s", $2, $7, $4); free($4) }
+
+opt_ondupupdate:
+| { None }
+| ONDUPLICATE KEY UPDATE insert_asgn_list { emit("DUPUPDATE %d", $4); }
+
+insert_opts:
+| { $$ = 0; } //nil
+| insert_opts LOW_PRIORITY { $$ = $1 | 01 ; }
+| insert_opts DELAYED { $$ = $1 | 02 ; }
+| insert_opts HIGH_PRIORITY { $$ = $1 | 04 ; }
+| insert_opts IGNORE { $$ = $1 | 010 ; }
+
+opt_into: 
+| INTO 
+| { None }
+
+opt_col_names:
+| { None }
+| LPAREN column_list RPAREN { emit("INSERTCOLS %d", $2); }
+
+insert_vals_list:
+| LPAREN insert_vals RPAREN { emit("VALUES %d", $2); $$ = 1; }
+| insert_vals_list COMMA LPAREN insert_vals RPAREN { emit("VALUES %d", $4); $$ = $1 + 1; }
+
+insert_vals:
+| expr { $$ = 1; }
+| DEFAULT { emit("DEFAULT"); $$ = 1; }
+| insert_vals COMMA expr { $$ = $1 + 1; }
+| insert_vals COMMA DEFAULT { emit("DEFAULT"); $$ = $1 + 1; }
+
+insert_stmt:
+| INSERT insert_opts opt_into NAME
+  SET insert_asgn_list
+  opt_ondupupdate
+  { emit("INSERTASGN %d %d %s", $2, $6, $4); free($4) }
+
+insert_stmt:
+| INSERT insert_opts opt_into NAME opt_col_names
+  select_stmt
+  opt_ondupupdate { emit("INSERTSELECT %d %s", $2, $4); free($4); }
+
+insert_asgn_list:
+| NAME COMPARISON expr
+ { if ($2 != 4) yyerror("bad insert assignment to %s", $1);
+   emit("ASSIGN %s", $1); free($1); $$ = 1; }
+| NAME COMPARISON DEFAULT
+           { if ($2 != 4) yyerror("bad insert assignment to %s", $1);
+             emit("DEFAULT"); emit("ASSIGN %s", $1); free($1); $$ = 1; }
+| insert_asgn_list COMMA NAME COMPARISON expr
+           { if ($4 != 4) yyerror("bad insert assignment to %s", $1);
+             emit("ASSIGN %s", $3); free($3); $$ = $1 + 1; }
+| insert_asgn_list COMMA NAME COMPARISON DEFAULT
+           { if ($4 != 4) yyerror("bad insert assignment to %s", $1);
+             emit("DEFAULT"); emit("ASSIGN %s", $3); free($3); $$ = $1 + 1; }
+
+//
+// replace just like insert
+//
+stmt:
+| replace_stmt { emit("STMT"); }
+
+replace_stmt:
+| REPLACE insert_opts opt_into NAME
+  opt_col_names
+  VALUES insert_vals_list
+  opt_ondupupdate { emit("REPLACEVALS %d %d %s", $2, $7, $4); free($4) }
+
+replace_stmt:
+| REPLACE insert_opts opt_into NAME
+  SET insert_asgn_list
+  opt_ondupupdate
+  { emit("REPLACEASGN %d %d %s", $2, $6, $4); free($4) }
+
+replace_stmt:
+| REPLACE insert_opts opt_into NAME opt_col_names
+  select_stmt
+  opt_ondupupdate { emit("REPLACESELECT %d %s", $2, $4); free($4); }
+
+/** update **/
+stmt:
+| update_stmt { emit("STMT"); }
+
+update_stmt:
+| UPDATE update_opts table_references
+  SET update_asgn_list
+  opt_where
+  opt_orderby
+  opt_limit { emit("UPDATE %d %d %d", $2, $3, $5); }
+
+update_opts:
+| { $$ = 0; } //nil
+| insert_opts LOW_PRIORITY { $$ = $1 | 01 ; }
+| insert_opts IGNORE { $$ = $1 | 010 ; }
+
+update_asgn_list:
+| NAME COMPARISON expr
+       { if ($2 != 4) yyerror("bad insert assignment to %s", $1);emit("ASSIGN %s", $1); free($1); $$ = 1; }
+| NAME DOT NAME COMPARISON expr
+       { if ($4 != 4) yyerror("bad insert assignment to %s", $1);emit("ASSIGN %s.%s", $1, $3); free($1); free($3); $$ = 1; }
+| update_asgn_list COMMA NAME COMPARISON expr
+       { if ($4 != 4) yyerror("bad insert assignment to %s", $3);emit("ASSIGN %s.%s", $3); free($3); $$ = $1 + 1; }
+| update_asgn_list COMMA NAME DOT NAME COMPARISON expr { if ($6 != 4) yyerror("bad insert assignment to %s.$s", $3, $5);emit("ASSIGN %s.%s", $3, $5); free($3); free($5); $$ = 1; }
+
+//
+// create database
+//
+stmt:
+| create_database_stmt { emit("STMT"); }
+
+create_database_stmt:
+| CREATE DATABASE opt_if_not_exists NAME { emit("CREATEDATABASE %d %s", $3, $4); free($4); }
+| CREATE SCHEMA opt_if_not_exists NAME { emit("CREATEDATABASE %d %s", $3, $4); free($4); }
+
+opt_if_not_exists:
+| { $$ = 0; } //nil
+| IF EXISTS { if(!$2)yyerror("IF EXISTS doesn't exist");
+                        $$ = $2; //NOT EXISTS hack }
+
+//
+// create table
+//
+stmt:
+| create_table_stmt { emit("STMT"); }
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME
+  LPAREN create_col_list RPAREN { emit("CREATE %d %d %d %s", $2, $4, $7, $5); free($5); }
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME DOT NAME
+  LPAREN create_col_list RPAREN { emit("CREATE %d %d %d %s.%s", $2, $4, $9, $5, $7);
+                          free($5); free($7); }
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME
+  LPAREN create_col_list RPAREN
+  create_select_statement { emit("CREATESELECT %d %d %d %s", $2, $4, $7, $5); free($5); }
+    ;
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME
+  create_select_statement { emit("CREATESELECT %d %d 0 %s", $2, $4, $5); free($5); }
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME DOT NAME
+  LPAREN create_col_list RPAREN
+  create_select_statement { emit("CREATESELECT %d %d 0 %s.%s", $2, $4, $5, $7);
+                              free($5); free($7); }
+
+create_table_stmt:
+| CREATE opt_temporary TABLE opt_if_not_exists NAME DOT NAME
+  create_select_statement { emit("CREATESELECT %d %d 0 %s.%s", $2, $4, $5, $7);
+                          free($5); free($7); }
+
+create_col_list: create_definition { $$ = 1; }
+| create_col_list COMMA create_definition { $$ = $1 + 1; }
+
+create_definition: 
+| { emit("STARTCOL"); } NAME data_type column_atts { emit("COLUMNDEF %d %s", $3, $2); free($2); }
+| PRIMARY KEY LPAREN column_list RPAREN { emit("PRIKEY %d", $4); }
+| KEY LPAREN column_list RPAREN { emit("KEY %d", $3); }
+| INDEX LPAREN column_list RPAREN { emit("KEY %d", $3); }
+| FULLTEXT INDEX LPAREN column_list RPAREN { emit("TEXTINDEX %d", $4); }
+| FULLTEXT KEY LPAREN column_list RPAREN { emit("TEXTINDEX %d", $4); }
+
+column_atts: 
+| { $$ = 0; } //nil
+| column_atts NOT NULLX { emit("ATTR NOTNULL"); $$ = $1 + 1; }
+| column_atts NULLX
+| column_atts DEFAULT STRING { emit("ATTR DEFAULT STRING %s", $3); free($3); $$ = $1 + 1; }
+| column_atts DEFAULT INTNUM { emit("ATTR DEFAULT NUMBER %d", $3); $$ = $1 + 1; }
+| column_atts DEFAULT APPROXNUM { emit("ATTR DEFAULT FLOAT %g", $3); $$ = $1 + 1; }
+| column_atts DEFAULT BOOL { emit("ATTR DEFAULT BOOL %d", $3); $$ = $1 + 1; }
+| column_atts AUTO_INCREMENT { emit("ATTR AUTOINC"); $$ = $1 + 1; }
+| column_atts UNIQUE LPAREN column_list RPAREN { emit("ATTR UNIQUEKEY %d", $4); $$ = $1 + 1; }
+| column_atts UNIQUE KEY { emit("ATTR UNIQUEKEY"); $$ = $1 + 1; }
+| column_atts PRIMARY KEY { emit("ATTR PRIKEY"); $$ = $1 + 1; }
+| column_atts KEY { emit("ATTR PRIKEY"); $$ = $1 + 1; }
+| column_atts COMMENT STRING { emit("ATTR COMMENT %s", $3); free($3); $$ = $1 + 1; }
+
+opt_length:
+| { None }
+| LPAREN INTNUM RPAREN { $$ = $2; }
+| LPAREN INTNUM COMMA INTNUM RPAREN { $$ = $2 + 1000*$4; }
+
+opt_binary:
+| { None }
+| BINARY { $$ = 4000; }
+
+opt_uz:
+| { None }
+| opt_uz UNSIGNED { $$ = $1 | 1000; }
+| opt_uz ZEROFILL { $$ = $1 | 2000; }
+
+opt_csc:
+| { None }
+| opt_csc CHAR SET STRING { emit("COLCHARSET %s", $4); free($4); }
+| opt_csc COLLATE STRING { emit("COLCOLLATE %s", $3); free($3); }
+
+data_type:
+| BIT opt_length { Bit($2) }
+| TINYINT opt_length opt_uz { TinyInt($2, $3) }
+| SMALLINT opt_length opt_uz { Smallint($2, $3) }
+| MEDIUMINT opt_length opt_uz { MediumInt($2, $3) }
+| INT opt_length opt_uz { Int($2, $3) }
+| INTEGER opt_length opt_uz { Integer($2, $3) }
+| BIGINT opt_length opt_uz { BigInt($2, $3) }
+| REAL opt_length opt_uz { Real($2, $3) }
+| DOUBLE opt_length opt_uz { Double($2, $3) }
+| FLOAT opt_length opt_uz { Float($2, $3) }
+| DECIMAL opt_length opt_uz { Decimal($2, $3) }
+| DATE { Date($1) }
+| TIME { Time($1) }
+| TIMESTAMP { TimeStamp($1) }
+| DATETIME { DateTime($1) }
+| YEAR { Year($1) }
+| CHAR opt_length opt_csc { Char($2, $3) }
+| VARCHAR LPAREN INTNUM RPAREN opt_csc { VarChar($3) }
+| BINARY opt_length { Binary($2) }
+| VARBINARY LPAREN INTNUM RPAREN { VarBinary($3) }
+| TINYBLOB { TinyBlob() }
+| Blob { BLOB() }
+| MEDIUMBLOB { MediumbLob($1) }
+| LONGBLOB { LongBlob($1) }
+| TINYTEXT opt_binary opt_csc { TinytExt($2, $3) }
+| TEXT opt_binary opt_csc { Text($2, $3) }
+| MEDIUMTEXT opt_binary opt_csc { MediumText($2, $3) }
+| LONGTEXT opt_binary opt_csc { LongText($2, $3) }
+//| ENUM LPAREN enum_list RPAREN opt_csc { Enum($3) }
+//| SET LPAREN enum_list RPAREN opt_csc { Set($3) }
+
+//enum_list:
+//| STRING { emit("ENUMVAL %s", $1); free($1); $$ = 1; }
+//| enum_list COMMA STRING { emit("ENUMVAL %s", $3); free($3); $$ = $1 + 1; }
+
+//create_select_statement:
+//| opt_ignore_replace opt_as select_stmt { emit("CREATESELECT %d", $1) }
+
+//opt_ignore_replace:
+//| { $$ = 0; } //nil
+//| IGNORE { $$ = 1; }
+//| REPLACE { $$ = 2; }
+
+//opt_temporary:
+//| { $$ = 0; } //nil
+//| TEMPORARY { $$ = 1;}
+
+//
+// set user variables ****/
+//
+//stmt:
+//| set_stmt { emit("STMT"); }
+
+//set_stmt:
+//| SET set_list
+
+//set_list:
+//| set_expr 
+//| set_list COMMA set_expr
+
+//set_expr:
+//| USERVAR COMPARISON expr { if ($2 != 4) yyerror("bad set to @%s", $1); emit("SET %s", $1); free($1); }
+//| USERVAR ASSIGN expr { emit("SET %s", $1); free($1); }
