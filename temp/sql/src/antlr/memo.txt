@@ -1,0 +1,13 @@
+java -jar antlr-4.8-complete.jar -Dlanguage=Python3 grammar/*.g4
+
+
+cp ./PlSqlLexer.py ../ast
+cp ./PlSqlLexerBase.py ../ast
+cp ./PlSqlParser.py ../ast
+cp ./PlSqlParserBase.py ../ast
+cp ./PlSqlParserListener.py ../ast
+
+
+https://www.stacknoob.com/s/BJ497a6qsyfKH44tBVQK2A
+https://stackoom.com/question/3qE0a/%E6%8F%90%E9%AB%98%E6%80%A7%E8%83%BD
+

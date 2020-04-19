@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="310248bf-da51-492a-8ef4-e9c110f0fd04" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="1ahXDT3e1IVKpTNiqslDbRYBpMF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.externalDependencies" />
+  </component>
+  <component name="RunManager">
+    <configuration name="ast_analyze_executor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="temp" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/sample/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sample/src/ast_analyze_executor.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.ast_analyze_executor" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="310248bf-da51-492a-8ef4-e9c110f0fd04" name="Default Changelist" comment="" />
+      <created>1587188679472</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1587188679472</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="765" y="149" key="#ast_analyze_executor" timestamp="1587191956629">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="765" y="149" key="#ast_analyze_executor/0.0.1920.1040@0.0.1920.1040" timestamp="1587191956629" />
+    <state x="462" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587192429353">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="462" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1587192429353" />
+    <state x="795" y="239" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1587191943655">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="795" y="239" key="#com.intellij.ide.macro.MacrosDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1587191943655" />
+    <state x="743" y="272" key="EnvironmentVariablesDialog" timestamp="1587190431267">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="743" y="272" key="EnvironmentVariablesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1587190431267" />
+    <state x="681" y="141" key="SettingsEditor" timestamp="1587191887104">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="681" y="141" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1587191887104" />
+  </component>
+</project>
